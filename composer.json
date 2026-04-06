@@ -1,0 +1,28 @@
+{
+  "name": "ivanbaric/settings",
+  "description": "Fluent settings pages with persistence, validation, cache, and optional Livewire admin UI for Laravel.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "laravel/framework": "^13.0"
+  },
+  "suggest": {
+    "livewire/livewire": "Required only for the packaged Livewire UI components.",
+    "livewire/flux": "Optional UI components used by the packaged settings views."
+  },
+  "autoload": {
+    "psr-4": {
+      "IvanBaric\\Settings\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "IvanBaric\\Settings\\SettingsServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
