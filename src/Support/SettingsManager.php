@@ -15,8 +15,7 @@ final class SettingsManager
     public function __construct(
         private readonly SettingsRegistry $registry,
         private readonly SettingsRepository $repository,
-    ) {
-    }
+    ) {}
 
     public function page(string $page): ?SettingsPage
     {

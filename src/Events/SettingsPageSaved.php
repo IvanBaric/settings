@@ -18,6 +18,5 @@ final class SettingsPageSaved
     public function __construct(
         public string $page,
         public array $values,
-    ) {
-    }
+    ) {}
 }

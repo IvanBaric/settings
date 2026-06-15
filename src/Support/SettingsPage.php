@@ -22,8 +22,7 @@ final class SettingsPage
         public ?string $icon = null,
         public int $sortOrder = 0,
         public ?string $permission = null,
-    ) {
-    }
+    ) {}
 
     public static function make(string $name): self
     {

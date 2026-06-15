@@ -92,7 +92,7 @@ final class SettingsRepository
         /** @var class-string<Setting> $modelClass */
         $modelClass = config('settings.models.setting', Setting::class);
 
-        return (new $modelClass())->newQuery();
+        return (new $modelClass)->newQuery();
     }
 
     protected function forgetCache(string $page, string $key): void

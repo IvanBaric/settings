@@ -22,8 +22,7 @@ final readonly class SettingField
         public array $rules = [],
         public array $options = [],
         public array $meta = [],
-    ) {
-    }
+    ) {}
 
     public function meta(string $key, mixed $fallback = null): mixed
     {

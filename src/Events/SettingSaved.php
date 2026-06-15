@@ -16,6 +16,5 @@ final class SettingSaved
         public string $page,
         public string $key,
         public mixed $value,
-    ) {
-    }
+    ) {}
 }
