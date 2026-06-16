@@ -25,4 +25,19 @@ return [
         'route_prefix' => env('SETTINGS_UI_ROUTE_PREFIX', 'app/settings'),
         'middleware' => ['web', 'auth', 'verified'],
     ],
+
+    'permissions' => [
+        [
+            'name' => 'settings',
+            'slug' => 'settings',
+            'label' => 'settings::permissions.group',
+            'description' => 'settings::permissions.description',
+            'icon' => 'settings',
+            'sort_order' => 50,
+            'items' => [
+                ['name' => 'View', 'slug' => 'view', 'code' => 'settings.view', 'label' => 'settings::permissions.view', 'sort_order' => 10],
+                ['name' => 'Update', 'slug' => 'update', 'code' => 'settings.update', 'label' => 'settings::permissions.update', 'sort_order' => 20],
+            ],
+        ],
+    ],
 ];

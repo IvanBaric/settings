@@ -10,6 +10,11 @@ use Livewire\Component;
 
 final class SettingsIndex extends Component
 {
+    public function mount(): void
+    {
+        corexis_authorize('settings.view');
+    }
+
     public function render(): View
     {
         return view('settings::livewire.settings-index', [

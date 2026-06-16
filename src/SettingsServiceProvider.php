@@ -40,6 +40,7 @@ final class SettingsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'settings');
 
         $this->registerConfiguredPages();
 
@@ -64,6 +65,10 @@ final class SettingsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/settings'),
         ], 'settings-views');
+
+        $this->publishes([
+            __DIR__.'/../lang' => lang_path('vendor/settings'),
+        ], 'settings-translations');
     }
 
     protected function registerConfiguredPages(): void

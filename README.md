@@ -24,10 +24,21 @@ The current implementation includes:
 - `SettingsRepository` for database persistence
 - `SettingsManager` for reads, writes, defaults, typed accessors, and cache-aware resolution
 - `SettingsValidationFactory` for generating validation rules from field definitions
+- `SaveSettingsPageAction` for authorized, validated settings page writes
 - a `settings()` helper
 - optional Livewire UI for listing pages and editing a single page
 - Blade field partial resolution through `SettingsFieldViewResolver`
 - package events for saved settings
+
+## Architecture
+
+Packaged settings UI follows the shared IvanBaric write flow:
+
+```text
+Livewire Component -> Action -> Corexis ActionResult -> Domain Event -> Listener
+```
+
+The settings definitions remain the source of truth for generated validation rules. `PageForm` coordinates UI state and toasts, while `SaveSettingsPageAction` authorizes the operation, validates untrusted Livewire state, persists the values, returns `IvanBaric\Corexis\Data\ActionResult`, and dispatches `SettingsPageSaved` after a successful save.
 
 Supported field types right now:
 

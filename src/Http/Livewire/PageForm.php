@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace IvanBaric\Settings\Http\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Gate;
-use IvanBaric\Settings\Events\SettingsPageSaved;
+use IvanBaric\Settings\Actions\SaveSettingsPageAction;
 use IvanBaric\Settings\Repositories\SettingsRepository;
 use IvanBaric\Settings\Support\SettingsFieldViewResolver;
 use IvanBaric\Settings\Support\SettingsPage;
 use IvanBaric\Settings\Support\SettingsRegistry;
-use IvanBaric\Settings\Support\SettingsValidationFactory;
 use Livewire\Component;
 
 final class PageForm extends Component
@@ -40,34 +38,27 @@ final class PageForm extends Component
         }
     }
 
-    public function save(
-        SettingsRegistry $registry,
-        SettingsRepository $repository,
-        SettingsValidationFactory $validationFactory,
-    ): void {
-        $page = $registry->page($this->pageName);
+    public function save(SaveSettingsPageAction $action): void
+    {
+        $result = $action->handle($this->pageName, $this->values);
 
-        abort_if($page === null, 404);
+        if ($result->failed()) {
+            foreach ($result->errors as $field => $messages) {
+                foreach ((array) $messages as $message) {
+                    $this->addError((string) $field, (string) $message);
+                }
+            }
 
-        if (! $this->ensureAuthorized($page)) {
+            if ($result->errors === []) {
+                $this->addError('settings', $result->message);
+            }
+
+            $this->dispatch('toast', type: 'danger', message: $result->message);
+
             return;
         }
 
-        $this->validate($validationFactory->rules($page));
-
-        $payload = [];
-
-        foreach ($page->fields() as $field) {
-            $payload[$field->name] = array_key_exists($field->name, $this->values)
-                ? $this->values[$field->name]
-                : $field->default;
-        }
-
-        $repository->bulkSet($this->pageName, $payload);
-
-        event(new SettingsPageSaved($this->pageName, $payload));
-
-        $this->dispatch('toast', type: 'success', message: 'Postavke su spremljene.');
+        $this->dispatch('toast', type: 'success', message: $result->message);
     }
 
     public function render(): View
@@ -86,22 +77,20 @@ final class PageForm extends Component
 
     protected function ensureAuthorized(SettingsPage $page, bool $abortOnFailure = false): bool
     {
-        if ($page->permission === null) {
-            return true;
-        }
+        $result = corexis_authorization_result($page->permission ?? 'settings.update');
 
-        $response = Gate::inspect($page->permission);
-
-        if ($response->allowed()) {
+        if ($result === null) {
             return true;
         }
 
         if ($abortOnFailure) {
-            abort(403, $response->message() ?: 'This settings page is not available.');
+            abort(403, $result->message ?: __('Ova stranica postavki nije dostupna.'));
         }
 
-        $this->addError('authorization', $response->message() ?: 'You are not allowed to update this settings page.');
-        $this->dispatch('toast', type: 'danger', message: $response->message() ?: 'You are not allowed to update this settings page.');
+        $message = $result->message ?: __('Nemate ovlasti za uređivanje ove stranice postavki.');
+
+        $this->addError('authorization', $message);
+        $this->dispatch('toast', type: 'danger', message: $message);
 
         return false;
     }
