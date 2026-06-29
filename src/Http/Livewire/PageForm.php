@@ -10,10 +10,12 @@ use IvanBaric\Settings\Repositories\SettingsRepository;
 use IvanBaric\Settings\Support\SettingsFieldViewResolver;
 use IvanBaric\Settings\Support\SettingsPage;
 use IvanBaric\Settings\Support\SettingsRegistry;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 final class PageForm extends Component
 {
+    #[Locked]
     public string $pageName = '';
 
     /**

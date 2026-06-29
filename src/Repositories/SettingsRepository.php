@@ -70,18 +70,28 @@ final class SettingsRepository
 
     protected function persist(string $page, string $key, mixed $value): Setting
     {
-        /** @var Setting $setting */
-        $setting = $this->query()->updateOrCreate(
-            [
+        return DB::transaction(function () use ($page, $key, $value): Setting {
+            $identity = [
                 'page' => $page,
                 'key' => $key,
-            ],
-            [
-                'value' => $value,
-            ],
-        );
+            ];
 
-        return $setting->refresh();
+            $setting = $this->query()
+                ->where($identity)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $setting instanceof Setting) {
+                /** @var Setting $setting */
+                $setting = $this->query()->getModel()->newInstance($identity);
+            }
+
+            $setting->forceFill([
+                'value' => $value,
+            ])->save();
+
+            return $setting->refresh();
+        });
     }
 
     /**

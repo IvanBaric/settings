@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace IvanBaric\Settings\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use JsonException;
 
 class Setting extends Model
@@ -12,6 +14,15 @@ class Setting extends Model
     protected $table = 'settings';
 
     protected $guarded = [];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $setting): void {
+            if (Schema::hasColumn($setting->getTable(), 'uuid') && blank($setting->uuid)) {
+                $setting->uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     public function getValueAttribute(?string $value): mixed
     {
