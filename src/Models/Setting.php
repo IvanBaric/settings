@@ -5,23 +5,22 @@ declare(strict_types=1);
 namespace IvanBaric\Settings\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
+use IvanBaric\Corexis\Concerns\HasUuid;
+use IvanBaric\Settings\Support\SettingsConfigResolver;
 use JsonException;
 
 class Setting extends Model
 {
-    protected $table = 'settings';
+    use HasUuid;
 
-    protected $guarded = [];
+    protected $guarded = [
+        'id',
+        'uuid',
+    ];
 
-    protected static function booted(): void
+    public function getTable(): string
     {
-        static::creating(function (self $setting): void {
-            if (Schema::hasColumn($setting->getTable(), 'uuid') && blank($setting->uuid)) {
-                $setting->uuid = (string) Str::uuid();
-            }
-        });
+        return SettingsConfigResolver::settingsTable();
     }
 
     public function getValueAttribute(?string $value): mixed

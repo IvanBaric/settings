@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace IvanBaric\Settings;
 
 use Illuminate\Support\ServiceProvider;
-use InvalidArgumentException;
-use IvanBaric\Settings\Contracts\RegistersSettings;
 use IvanBaric\Settings\Http\Livewire\PageForm;
 use IvanBaric\Settings\Http\Livewire\SettingsIndex;
 use IvanBaric\Settings\Repositories\SettingsRepository;
 use IvanBaric\Settings\Support\SettingsFieldViewResolver;
+use IvanBaric\Settings\Support\SettingsConfigResolver;
 use IvanBaric\Settings\Support\SettingsManager;
 use IvanBaric\Settings\Support\SettingsRegistry;
 use IvanBaric\Settings\Support\SettingsValidationFactory;
@@ -75,17 +74,8 @@ final class SettingsServiceProvider extends ServiceProvider
     {
         $registry = $this->app->make(SettingsRegistry::class);
 
-        foreach ((array) config('settings.registrars', []) as $registrarClass) {
-            if (! is_string($registrarClass) || $registrarClass === '') {
-                continue;
-            }
-
+        foreach (SettingsConfigResolver::registrars() as $registrarClass) {
             $registrar = $this->app->make($registrarClass);
-
-            if (! $registrar instanceof RegistersSettings) {
-                throw new InvalidArgumentException("Configured settings registrar [{$registrarClass}] must implement ".RegistersSettings::class.'.');
-            }
-
             $registry->registerRegistrar($registrar);
         }
     }

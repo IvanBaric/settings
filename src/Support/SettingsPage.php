@@ -113,7 +113,11 @@ final class SettingsPage
 
     public function field(string $name): ?SettingField
     {
-        return $this->fields[$name]?->build() ?? null;
+        if (! array_key_exists($name, $this->fields)) {
+            return null;
+        }
+
+        return $this->fields[$name]->build();
     }
 
     public function visibleTo(mixed $user): bool

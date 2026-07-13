@@ -1,9 +1,18 @@
 <div class="space-y-3">
-    <flux:textarea
-        wire:model="values.{{ $field->name }}"
-        :label="$field->label"
-        :rows="$field->meta('rows', 4)"
-    />
+    @if ($field->isRequired())
+        <flux:textarea
+            wire:model="values.{{ $field->name }}"
+            :label="$field->label"
+            :rows="$field->meta('rows', 4)"
+            data-required
+        />
+    @else
+        <flux:textarea
+            wire:model="values.{{ $field->name }}"
+            :label="$field->label"
+            :rows="$field->meta('rows', 4)"
+        />
+    @endif
 
     @if ($field->description)
         <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $field->description }}</p>

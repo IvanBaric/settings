@@ -1,9 +1,17 @@
 <div class="space-y-3">
-    <flux:select wire:model="values.{{ $field->name }}" :label="$field->label">
-        @foreach ($field->options as $value => $label)
-            <option value="{{ $value }}">{{ $label }}</option>
-        @endforeach
-    </flux:select>
+    @if ($field->isRequired())
+        <flux:select wire:model="values.{{ $field->name }}" variant="listbox" :label="$field->label" data-required>
+            @foreach ($field->options as $value => $label)
+                <option value="{{ $value }}">{{ $label }}</option>
+            @endforeach
+        </flux:select>
+    @else
+        <flux:select wire:model="values.{{ $field->name }}" variant="listbox" :label="$field->label">
+            @foreach ($field->options as $value => $label)
+                <option value="{{ $value }}">{{ $label }}</option>
+            @endforeach
+        </flux:select>
+    @endif
 
     @if ($field->description)
         <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ $field->description }}</p>

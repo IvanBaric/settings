@@ -6,6 +6,7 @@ namespace IvanBaric\Settings\Http\Livewire;
 
 use Illuminate\Contracts\View\View;
 use IvanBaric\Settings\Actions\SaveSettingsPageAction;
+use IvanBaric\Settings\Models\Setting;
 use IvanBaric\Settings\Repositories\SettingsRepository;
 use IvanBaric\Settings\Support\SettingsFieldViewResolver;
 use IvanBaric\Settings\Support\SettingsPage;
@@ -36,7 +37,10 @@ final class PageForm extends Component
         $stored = $repository->allByPage($pageName);
 
         foreach ($page->fields() as $field) {
-            $this->values[$field->name] = $stored[$field->name]?->value ?? $field->default;
+            $setting = $stored->get($field->name);
+            $this->values[$field->name] = $setting instanceof Setting
+                ? $setting->value
+                : $field->default;
         }
     }
 

@@ -1,12 +1,26 @@
-<div class="mx-auto max-w-6xl p-8">
-    <div class="flex items-start gap-10 max-md:flex-col">
-        <div class="w-full space-y-4 md:w-[260px]">
-            <div class="space-y-2">
-                <flux:heading size="lg">Settings</flux:heading>
-                <flux:subheading>Registered settings pages.</flux:subheading>
+<x-admin-ui::page class="admin-page-compact">
+    <x-admin-ui::page-header
+        :title="$page->label"
+        :description="$page->group
+            ? __('Postavke područja :group.', ['group' => __(\Illuminate\Support\Str::headline($page->group))])
+            : __('Upravljajte vrijednostima odabranih postavki.')"
+        icon="cog-6-tooth"
+    >
+        <x-slot:actions>
+            <flux:button :href="route('settings.pages.index')" variant="ghost" icon="arrow-left" wire:navigate>
+                {{ __('Sve postavke') }}
+            </flux:button>
+        </x-slot:actions>
+    </x-admin-ui::page-header>
+
+    <div class="grid min-w-0 gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
+        <aside class="admin-panel h-fit p-2">
+            <div class="px-3 pb-2 pt-3">
+                <h2 class="admin-panel-title">{{ __('Postavke') }}</h2>
+                <p class="admin-panel-description">{{ __('Registrirana područja postavki.') }}</p>
             </div>
 
-            <flux:navlist aria-label="Settings pages">
+            <flux:navlist aria-label="{{ __('Stranice postavki') }}">
                 @foreach ($pages as $navPage)
                     <flux:navlist.item
                         :href="route('settings.pages.edit', ['pageName' => $navPage->name])"
@@ -17,31 +31,24 @@
                     </flux:navlist.item>
                 @endforeach
             </flux:navlist>
-        </div>
+        </aside>
 
-        <flux:separator class="md:hidden" />
+        <x-admin-ui::panel>
+            <form wire:submit="save" wire:loading.class="admin-panel-content-loading" wire:target="save" class="relative space-y-8 p-6 sm:p-7">
+                <x-admin-ui::loading-overlay target="save" :text="__('Spremanje...')" />
 
-        <div class="flex-1 space-y-6">
-            <div class="space-y-1">
-                <flux:heading size="xl">{{ $page->label }}</flux:heading>
-                <flux:subheading>
-                    {{ $page->group ? \Illuminate\Support\Str::headline($page->group).' settings' : 'Manage registered settings values.' }}
-                </flux:subheading>
-            </div>
-
-            <form wire:submit="save" class="space-y-8">
                 @foreach ($page->fields() as $field)
                     @include($viewResolver->resolve($field->type), ['field' => $field])
                 @endforeach
 
                 @error('authorization')
-                    <p class="text-sm text-red-600">{{ $message }}</p>
+                    <p class="text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
 
-                <div class="flex justify-end">
-                    <flux:button type="submit" variant="primary">Spremi</flux:button>
+                <div class="flex justify-end border-t border-zinc-100 pt-6 dark:border-zinc-800">
+                    <x-admin-ui::submit-button target="save">{{ __('Spremi promjene') }}</x-admin-ui::submit-button>
                 </div>
             </form>
-        </div>
+        </x-admin-ui::panel>
     </div>
-</div>
+</x-admin-ui::page>

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use IvanBaric\Settings\Models\Setting;
+use IvanBaric\Settings\Support\SettingsModels;
 
 final class SettingsRepository
 {
@@ -32,7 +33,11 @@ final class SettingsRepository
             ->where('key', $key)
             ->first();
 
-        return $setting?->value ?? $fallback;
+        if (! $setting instanceof Setting) {
+            return $fallback;
+        }
+
+        return $setting->value;
     }
 
     public function set(string $page, string $key, mixed $value): Setting
@@ -52,7 +57,7 @@ final class SettingsRepository
     {
         /** @var Collection<string, Setting> $saved */
         $saved = DB::transaction(function () use ($page, $values): Collection {
-            $saved = collect();
+            $saved = new Collection;
 
             foreach ($values as $key => $value) {
                 $saved->put((string) $key, $this->persist($page, (string) $key, $value));
@@ -99,8 +104,7 @@ final class SettingsRepository
      */
     protected function query(): Builder
     {
-        /** @var class-string<Setting> $modelClass */
-        $modelClass = config('settings.models.setting', Setting::class);
+        $modelClass = SettingsModels::setting();
 
         return (new $modelClass)->newQuery();
     }

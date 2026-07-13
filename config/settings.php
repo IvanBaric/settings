@@ -5,6 +5,8 @@ declare(strict_types=1);
 use IvanBaric\Settings\Models\Setting;
 
 return [
+    'table' => env('SETTINGS_TABLE', 'settings'),
+
     'models' => [
         'setting' => Setting::class,
     ],

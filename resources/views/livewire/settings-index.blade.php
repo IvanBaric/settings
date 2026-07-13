@@ -1,41 +1,48 @@
-<div class="mx-auto max-w-5xl space-y-8 p-8">
-    <div class="space-y-2">
-        <flux:heading size="xl">Settings</flux:heading>
-        <flux:subheading>Manage registered package settings pages.</flux:subheading>
-    </div>
+<x-admin-ui::page class="admin-page-compact">
+    <x-admin-ui::page-header
+        :title="__('Postavke')"
+        :description="__('Upravljajte registriranim postavkama sustava na jednom mjestu.')"
+        icon="cog-6-tooth"
+    />
 
-    @if ($pages === [])
-        <div class="rounded-3xl border border-dashed border-zinc-300 bg-white/70 p-8 text-sm text-zinc-500 shadow-xs dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400">
-            No settings pages are currently registered.
-        </div>
-    @else
-        <div class="grid gap-4 md:grid-cols-2">
-            @foreach ($pages as $page)
-                <a
-                    href="{{ route('settings.pages.edit', ['pageName' => $page->name]) }}"
-                    wire:navigate
-                    class="block rounded-3xl border border-zinc-200 bg-white p-6 shadow-xs transition hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
-                >
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="text-xs font-medium uppercase tracking-[0.18em] text-zinc-400">
-                                {{ $page->group ? \Illuminate\Support\Str::headline($page->group) : 'General' }}
-                            </div>
+    <x-admin-ui::panel>
+        @if ($pages === [])
+            <x-admin-ui::empty-state
+                :title="__('Nema dostupnih postavki')"
+                :description="__('Trenutno nije registrirana nijedna stranica postavki.')"
+            >
+                <x-slot:icon>
+                    <flux:icon name="cog-6-tooth" class="size-5" />
+                </x-slot:icon>
+            </x-admin-ui::empty-state>
+        @else
+            <x-admin-ui::panel-header
+                :title="__('Dostupne postavke')"
+                :description="__('Odaberite područje koje želite urediti.')"
+            />
 
-                            @if ($page->icon)
-                                <div class="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-                                    {{ $page->icon }}
-                                </div>
-                            @endif
-                        </div>
+            <div class="divide-y divide-zinc-100/80 dark:divide-zinc-800/80">
+                @foreach ($pages as $page)
+                    <a
+                        href="{{ route('settings.pages.edit', ['pageName' => $page->name]) }}"
+                        wire:navigate
+                        class="group flex min-w-0 items-center gap-4 px-6 py-4 transition duration-150 hover:bg-zinc-50/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/30 dark:hover:bg-zinc-900/60 sm:px-7"
+                    >
+                        <span class="admin-action-icon">
+                            <flux:icon name="cog-6-tooth" class="size-4" />
+                        </span>
 
-                        <div>
-                            <flux:heading size="lg">{{ $page->label }}</flux:heading>
-                            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ $page->name }}</p>
-                        </div>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-    @endif
-</div>
+                        <span class="min-w-0 flex-1">
+                            <span class="block truncate text-[15px] font-semibold text-zinc-950 dark:text-white">{{ $page->label }}</span>
+                            <span class="mt-1 block text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ $page->group ? __(\Illuminate\Support\Str::headline($page->group)) : __('Općenito') }}
+                            </span>
+                        </span>
+
+                        <flux:icon name="chevron-right" class="size-4 shrink-0 text-zinc-300 transition group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400" />
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </x-admin-ui::panel>
+</x-admin-ui::page>

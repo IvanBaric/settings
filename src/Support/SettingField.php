@@ -28,4 +28,19 @@ final readonly class SettingField
     {
         return $this->meta[$key] ?? $fallback;
     }
+
+    public function isRequired(): bool
+    {
+        foreach ($this->rules as $rule) {
+            if (! is_string($rule)) {
+                continue;
+            }
+
+            if (in_array('required', explode('|', $rule), true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

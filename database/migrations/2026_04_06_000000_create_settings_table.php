@@ -5,12 +5,13 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use IvanBaric\Settings\Support\SettingsModels;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('settings', function (Blueprint $table): void {
+        Schema::create(SettingsModels::table(), function (Blueprint $table): void {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('page');
@@ -25,6 +26,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('settings');
+        Schema::dropIfExists(SettingsModels::table());
     }
 };
